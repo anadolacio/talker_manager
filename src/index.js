@@ -18,6 +18,22 @@ app.get('/talker', async (_req, res) => {
   return res.status(200).json(data);
 });
 
+app.get('/talker/:id', async (req, res) => {
+  try {
+      const { id } = req.params;
+      const way = await fs.readFile(pathSolution, 'utf-8');
+      const citizens = JSON.parse(way);
+
+      const result = citizens.find((citzen) => citzen.id === +id);
+
+      if (result) return res.status(200).json(result);
+
+      return res.status(404).send({ message: 'Pessoa palestrante não encontrada' });
+  } catch (error) {
+      res.status(404).send({ message: `Erro inesperado: ${error}` });
+  }
+});
+
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
