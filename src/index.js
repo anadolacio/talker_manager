@@ -1,10 +1,12 @@
 const express = require('express');
-const talkerRoute = require('./routes/talkerRoute');
-const fs = require('fs/promises');
-const path = require('path');
-const pathSolution = path.resolve(__dirname, './talker.json')
+
 
 const app = express();
+const fs = require('fs/promises');
+const path = require('path');
+
+const pathSolution = path.resolve(__dirname, './talker.json');
+
 app.use(express.json());
 
 const HTTP_OK_STATUS = 200;
