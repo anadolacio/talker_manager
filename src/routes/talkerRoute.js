@@ -6,17 +6,11 @@ const route = express.Router();
 
 const pathSolution = path.resolve(__dirname, './talker.json');
 
-route.get('/', async (_req, res) => {
-    try {
-        const result = await JSON.parse(fs.readFile(pathSolution, 'utf-8'));
+route.get('/talker', async (_req, res) => {
+  const result = await fs.readFile(pathSolution, 'utf-8');
+  const data = JSON.parse(result);
 
-        if (result) {
-            return res.status(200).json(result);
-        }
-        return res.status(200).json([]);
-    } catch (error) {
-        return res(400).send({ message: `Erro de requisição: ${{ error }}` });
-    }
+  return res.status(200).json(data);
 });
 
 module.exports = route;

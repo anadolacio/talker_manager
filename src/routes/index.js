@@ -2,8 +2,8 @@ const express = require('express');
 
 const route = express.Router();
 
-const talker = require('./talkerRoute.js');
+const talkerRoute = require('./talkerRoute');
 
-route.use(talker);
+route.use(talkerRoute);
 
 module.exports = route;
