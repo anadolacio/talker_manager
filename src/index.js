@@ -3,6 +3,7 @@ const express = require('express');
 const fs = require('fs/promises');
 const path = require('path');
 const tokenBuilder = require('./utils/tokenBuilder');
+const { emailValidation, passwordValidation } = require('./middleware/fieldsValidation');
 
 const app = express();
 const pathSolution = path.resolve(__dirname, './talker.json');
@@ -34,7 +35,7 @@ app.get('/talker/:id', async (req, res) => {
   }
 });
 
-app.post('/login', async (req, res) => {
+app.post('/login', emailValidation, passwordValidation, async (req, res) => {
   try {
       const fieldBody = req.body;
       const loginField = ['email', 'password'];
