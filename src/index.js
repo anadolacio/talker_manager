@@ -1,11 +1,11 @@
 const express = require('express');
 
-const app = express();
 const fs = require('fs/promises');
 const path = require('path');
+const tokenBuilder = require('./utils/tokenBuilder');
 
+const app = express();
 const pathSolution = path.resolve(__dirname, './talker.json');
-
 app.use(express.json());
 
 const HTTP_OK_STATUS = 200;
@@ -32,6 +32,24 @@ app.get('/talker/:id', async (req, res) => {
   } catch (error) {
       res.status(404).send({ message: `Erro inesperado: ${error}` });
   }
+});
+
+app.post('/login', async (req, res) => {
+  try {
+      const fieldBody = req.body;
+      const loginField = ['email', 'password'];
+
+      const fieldValidation = loginField.every((field) => field in fieldBody);
+
+      const token = tokenBuilder();
+
+      if (fieldValidation) return res.status(200).json({ token });
+      return res
+      .status(400)
+      .send({ message: 'É necessário preencher todos os campos!' });
+    } catch (error) {
+      return res.status(400).send({ message: `Erro inesperado: ${error}` });
+    }
 });
 
 // não remova esse endpoint, e para o avaliador funcionar
