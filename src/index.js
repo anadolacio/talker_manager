@@ -4,6 +4,16 @@ const fs = require('fs/promises');
 const path = require('path');
 const tokenBuilder = require('./utils/tokenBuilder');
 const { emailValidation, passwordValidation } = require('./middleware/fieldsValidation');
+const { readFileData, writeFileData } = require('./utils/personData');
+
+const {
+  tokenValidation,
+  nameValidation,
+  ageValidation,
+  talkValidation,
+  watchedValidation,
+  rateValidation,
+} = require('./middleware/newPersonValidation');
 
 const app = express();
 const pathSolution = path.resolve(__dirname, './talker.json');
@@ -52,6 +62,34 @@ app.post('/login', emailValidation, passwordValidation, async (req, res) => {
       return res.status(400).send({ message: `Erro inesperado: ${error}` });
     }
 });
+
+app.post(
+  '/talker',
+  tokenValidation,
+  nameValidation,
+  ageValidation,
+  talkValidation,
+  watchedValidation,
+  rateValidation,
+  async (req, res) => {
+      try {
+          const require = req.body;
+          const dataTalker = await readFileData();
+
+          const newPerson = { id: dataTalker.length + 1, ...require };
+
+          dataTalker.push(newPerson);
+
+          await writeFileData(dataTalker);
+
+          return res.status(201).json(newPerson);
+      } catch (error) {
+          return res
+              .status(400)
+              .send({ message: `Erro inesperado: ${error}` });
+      }
+  },
+);
 
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
