@@ -73,10 +73,10 @@ app.post(
   rateValidation,
   async (req, res) => {
       try {
-          const require = req.body;
+          const fieldBody = req.body;
           const dataTalker = await readFileData();
 
-          const newPerson = { id: dataTalker.length + 1, ...require };
+          const newPerson = { id: dataTalker.length + 1, ...fieldBody };
 
           dataTalker.push(newPerson);
 
@@ -88,6 +88,59 @@ app.post(
               .status(400)
               .send({ message: `Erro inesperado: ${error}` });
       }
+  },
+);
+
+app.put(
+  '/talker/:id',
+  tokenValidation,
+  nameValidation,
+  ageValidation,
+  talkValidation,
+  watchedValidation,
+  rateValidation,
+  async (req, res) => {
+      try {
+          const { id } = req.params;
+          const fieldBody = req.body;
+          const dataTalker = await readFileData();
+          const talker = dataTalker.find((person) => person.id === +id);
+          if (!talker) {
+              return res
+                  .status(404).send({ message: 'Pessoa palestrante não encontrada' });
+          }
+          const newPerson = { ...talker, ...fieldBody };
+          const index = dataTalker.indexOf(talker);
+          dataTalker[index] = newPerson;
+          await writeFileData(dataTalker);
+          return res.status(200).json(newPerson);
+      } catch (error) {
+          return res
+              .status(400).send({ message: `Erro inesperado: ${error}` });
+      }
+  },
+);
+
+app.delete(
+  '/talker/:id',
+  tokenValidation,
+    async (req, res) => {
+      try {
+          const { id } = req.params;
+          const dataTalker = await readFileData();
+          const talker = dataTalker.find((person) => person.id === +id);
+          if (!talker) {
+              return res
+                  .status(404).send({ message: 'Pessoa palestrante não encontrada' });
+          }
+        const index = dataTalker.indexOf(talker);
+        dataTalker.splice(index, 1);
+        await writeFileData(dataTalker);
+        return res.status(204).json();
+    } catch (error) {
+        return res
+            .status(400).send({ message: `Erro inesperado: ${error}` });
+    }
   },
 );
 
