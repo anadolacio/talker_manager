@@ -4,7 +4,7 @@ const fs = require('fs/promises');
 const path = require('path');
 const tokenBuilder = require('./utils/tokenBuilder');
 const { emailValidation, passwordValidation } = require('./middleware/fieldsValidation');
-const { readFileData, writeFileData } = require('./utils/personData');
+const { readFileData, writeFileData, getTalkers } = require('./utils/personData');
 
 const {
   tokenValidation,
@@ -143,6 +143,20 @@ app.delete(
     }
   },
 );
+
+app.get('/talker/search', tokenValidation, async (req, res) => {
+  const { q } = req.query;
+  const talkers = await getTalkers();
+
+  if (!q) {
+    return res.status(200).json(talkers);
+  }
+  const filteredTalkers = talkers.filter((talker) => talker.name.includes(q));
+  if (filteredTalkers.length === 0) {
+    return res.status(200).json([]);
+  }
+  return res.status(200).json(filteredTalkers);
+});
 
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {

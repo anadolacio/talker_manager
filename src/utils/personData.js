@@ -22,7 +22,14 @@ const writeFileData = async (data) => {
     }
 };
 
+const getTalkers = async () => {
+    const talkers = await readFileData();
+    return talkers;
+  };
+  
+
 module.exports = {
     readFileData,
     writeFileData,
+    getTalkers,
 };
